@@ -4,50 +4,69 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.aiwolf.common.data.Agent;
+import org.aiwolf.common.data.Role;
+import org.aiwolf.common.net.GameSetting;
 
 public class RoleCombination {
 	private Set<Agent> wolfs = null;
-	private Agent possessed = null;
+	private Set<Agent> possesseds = null;
 	
-	public RoleCombination(Agent wolf1, Agent wolf2, Agent wolf3, Agent possessed) {
-		this.wolfs = new HashSet<Agent>(3);
-		this.wolfs.add(wolf1);
-		this.wolfs.add(wolf2);
-		this.wolfs.add(wolf3);
-		this.possessed = possessed;
+	public RoleCombination(Set<Agent> wolfs, Set<Agent> possesseds) {
+		this.wolfs = wolfs;
+		this.possesseds = possesseds;
+	}
+	
+	public boolean isValid(int playerNum, GameSetting gameSetting) {
+		int w = gameSetting.getRoleNum(Role.WEREWOLF);
+		int p = gameSetting.getRoleNum(Role.POSSESSED);
+		
+		if(wolfs.size() != w)
+			return false;
+		if(possesseds.size() != p)
+			return false;
+		
+		Set<Agent> wp = new HashSet<>();
+		wp.addAll(wolfs);
+		wp.addAll(possesseds);
+		if(wp.size() != w + p)
+			return false;
+		
+		return true;
 	}
 	
 	public Set<Agent> getWolfs() {
 		return wolfs;
 	}
 
-	public Agent getPossessed() {
-		return possessed;
+	public Set<Agent> getPossesseds() {
+		return possesseds;
 	}
 	
-	public boolean isWolf(Agent agent){
+	public boolean isWolf(Agent agent) {
 		return wolfs.contains(agent);
 	}
 	
-	public boolean isPossessed(Agent agent){
-		return possessed.equals(agent);
+	public boolean isPossessed(Agent agent) {
+		return possesseds.contains(agent);
+	}
+	
+	public boolean contains(Agent agent) {
+		return wolfs.contains(agent) || possesseds.contains(agent);
 	}
 	
 	public boolean isVillagerTeam(Agent agent){
 		return !isWolf(agent) && !isPossessed(agent);
 	}
-	
-	//自動生成、チェックしてない
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((possessed == null) ? 0 : possessed.hashCode());
+		result = prime * result + ((possesseds == null) ? 0 : possesseds.hashCode());
 		result = prime * result + ((wolfs == null) ? 0 : wolfs.hashCode());
 		return result;
 	}
-	
-	//自動生成、チェックしてない
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -57,7 +76,10 @@ public class RoleCombination {
 		if (getClass() != obj.getClass())
 			return false;
 		RoleCombination other = (RoleCombination) obj;
-		if (possessed != other.possessed)
+		if (possesseds == null) {
+			if (other.possesseds != null)
+				return false;
+		} else if (!possesseds.equals(other.possesseds))
 			return false;
 		if (wolfs == null) {
 			if (other.wolfs != null)

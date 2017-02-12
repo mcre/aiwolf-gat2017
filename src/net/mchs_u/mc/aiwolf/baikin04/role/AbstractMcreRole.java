@@ -31,9 +31,9 @@ public abstract class AbstractMcreRole implements Player {
 		
 		List<Agent> agents = gameInfo.getAgentList();
 
-		objectiveEstimate = new Estimate(agents);
-		subjectiveEstimate = new Estimate(agents);
-		pretendVillagerEstimate = new Estimate(agents);
+		objectiveEstimate       = new Estimate(agents, gameSetting);
+		subjectiveEstimate      = new Estimate(agents, gameSetting);
+		pretendVillagerEstimate = new Estimate(agents, gameSetting);
 		
 		subjectiveEstimate.updateDefinedRole(getGameInfo().getAgent(), getGameInfo().getRole());
 		pretendVillagerEstimate.updateDefinedRole(getGameInfo().getAgent(), Role.VILLAGER);

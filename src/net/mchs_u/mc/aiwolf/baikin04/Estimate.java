@@ -14,28 +14,24 @@ import org.aiwolf.common.data.Role;
 import org.aiwolf.common.data.Species;
 import org.aiwolf.common.data.Talk;
 import org.aiwolf.common.data.Vote;
+import org.aiwolf.common.net.GameSetting;
 
 public class Estimate {
 	private Map<String,Double> rates = null;
 	
 	private List<Agent> agents = null;
 	
-	private Map<RoleCombination,Double> probabilities = null;
+	private Probabilities probs = null;
 	private Set<Agent> coSeerSet = null; 
 	private Set<Agent> coMediumSet = null;
 	private Set<Agent> coBodyguardSet = null;
 	private Set<Agent> coSet = null;
 	
-	private boolean updated = true;
-	
 	private Map<Agent, Double> werewolfLikeness = null;
 	private Map<Agent, Double> villagerTeamLikeness = null;
 	private Map<Agent, Agent> todaysVotePlanMap = null;
 	
-	public Estimate(List<Agent> agents) {
-		if(agents.size() != 15){
-			return;
-		}
+	public Estimate(List<Agent> agents, GameSetting gameSetting) {
 		this.agents = agents;
 		
 		rates = new HashMap<>();
@@ -51,7 +47,6 @@ public class Estimate {
 		rates.put("2_SEER_CO_FROM_VILLGER_TEAM"        , 0.001d);
 		rates.put("2_MEDIUM_CO_FROM_VILLAGER_TEAM"     , 0.001d);
 		rates.put("2_BODYGUARD_CO_FROM_VILLAGER_TEAM"  , 0.001d);
-		rates.put("NEVER_CO_FROM_POSSESSED"            , 1.000d);
 		rates.put("ONLY_SEER_CO_FROM_WEREWOLF_TEAM"    , 0.010d);
 		rates.put("ONLY_MEDIUM_CO_FROM_WEREWOLF_TEAM"  , 0.010d);
 		rates.put("TEAM_MEMBER_WOLF"                   , 0.500d);
@@ -64,23 +59,7 @@ public class Estimate {
 		werewolfLikeness = new HashMap<>();
 		villagerTeamLikeness = new HashMap<>();
 
-		probabilities = new HashMap<>();
-		for(int i = 0; i < 15; i++){
-			for(int j = i + 1; j < 15; j++){
-				for(int k = j + 1; k < 15; k++){
-					for(int l = 0; l < 15; l++){
-						if(l == i || l==j || l==k)
-							continue;
-						probabilities.put(new RoleCombination(agents.get(i),agents.get(j),agents.get(k),agents.get(l)), 1d); 
-					}
-				}
-			}
-		}
-		
-		// 狂人がCOしていない
-		for(RoleCombination rc: probabilities.keySet()){
-			update(rc, "NEVER_CO_FROM_POSSESSED");
-		}
+		probs = new Probabilities(agents, gameSetting);
 	}
 	
 	public void dayStart(){
@@ -88,13 +67,13 @@ public class Estimate {
 	}
 	
 	public Map<Agent, Double> getWerewolfLikeness() {
-		if(updated)
+		if(probs.isUpdated())
 			calcLikeness();
 		return werewolfLikeness;
 	}
 
 	public Map<Agent, Double> getVillagerTeamLikeness() {
-		if(updated)
+		if(probs.isUpdated())
 			calcLikeness();
 		return villagerTeamLikeness;
 	}
@@ -107,8 +86,8 @@ public class Estimate {
 		}
 		
 		double sum = 0;
-		for(RoleCombination rc: probabilities.keySet()){
-			double d = probabilities.get(rc);
+		for(RoleCombination rc: probs.getRoleCombinations()){
+			double d = probs.getProbability(rc);
 			sum += d;
 			for(Agent a: agents){
 				if(rc.isWolf(a)){
@@ -123,13 +102,13 @@ public class Estimate {
 			werewolfLikeness.put(a, werewolfLikeness.get(a) / sum);
 			villagerTeamLikeness.put(a, villagerTeamLikeness.get(a) / sum);
 		}
-		updated = false;
+		probs.resetUpdated();
 	}
 	
 	//終了条件を満たしているパターン(狼が全滅してるのにゲームが終わってないなど)を削除
 	public void updateAliveAgentList(List<Agent> aliveAgents){		
 		Set<RoleCombination> reserveRemove = new HashSet<>();
-		for(RoleCombination rc: probabilities.keySet()){
+		for(RoleCombination rc: probs.getRoleCombinations()){
 			int countWerewolf = 0;
 			for(Agent a: aliveAgents){
 				if(rc.isWolf(a))
@@ -143,13 +122,13 @@ public class Estimate {
 				reserveRemove.add(rc);
 		}
 		for(RoleCombination rr:reserveRemove)
-			remove(rr);
+			probs.remove(rr);
 	}
 	
 	//確定した役職（自分の役職、仲間の狼など）以外の確率をゼロにする
 	public void updateDefinedRole(Agent agent, Role role){
 		Set<RoleCombination> reserveRemove = new HashSet<>();
-		for(RoleCombination rc: probabilities.keySet()){
+		for(RoleCombination rc: probs.getRoleCombinations()){
 			if(role == Role.POSSESSED){
 				if(!rc.isPossessed(agent))
 					reserveRemove.add(rc);
@@ -162,13 +141,13 @@ public class Estimate {
 			}
 		}
 		for(RoleCombination rr:reserveRemove)
-			remove(rr);
+			probs.remove(rr);
 	}
 	
 	//確定した人種（自分目線の占い結果など）以外の確率をゼロにする
 	public void updateDefinedSpecies(Agent agent, Species species){
 		Set<RoleCombination> reserveRemove = new HashSet<>();
-		for(RoleCombination rc: probabilities.keySet()){
+		for(RoleCombination rc: probs.getRoleCombinations()){
 			if(species == Species.WEREWOLF){
 				if(!rc.isWolf(agent))
 					reserveRemove.add(rc);
@@ -178,15 +157,15 @@ public class Estimate {
 			}
 		}
 		for(RoleCombination rr:reserveRemove)
-			remove(rr);
+			probs.remove(rr);
 	}
 	
 	//仲間の狼の確率を下げる（身内切りのためゼロにはしない）（村人目線のときにつかう）
 	public void updateTeamMemberWolf(List<Agent> agents){
-		for(RoleCombination rc: probabilities.keySet()){
+		for(RoleCombination rc: probs.getRoleCombinations()){
 			for(Agent a: agents){
 				if(rc.isWolf(a)){
-					update(rc, "TEAM_MEMBER_WOLF");
+					probs.update(rc, rates.get("TEAM_MEMBER_WOLF"));
 					break;
 				}
 			}
@@ -195,16 +174,16 @@ public class Estimate {
 	
 	public void updateVoteList(List<Vote> voteList){
 		for(Vote v: voteList){
-			for(RoleCombination rc: probabilities.keySet()){
+			for(RoleCombination rc: probs.getRoleCombinations()){
 				// 狂人から人狼への投票
 				if(rc.isPossessed(v.getAgent()) && rc.isWolf(v.getTarget()))
-					update(rc, "VOTE_POSSESSED_TO_WEREWOLF");
+					probs.update(rc, rates.get("VOTE_POSSESSED_TO_WEREWOLF"));
 				// 人狼から狂人への投票
 				else if(rc.isWolf(v.getAgent()) && rc.isPossessed(v.getTarget()))
-					update(rc, "VOTE_WEREWOLF_TO_POSSESSED");
+					probs.update(rc, rates.get("VOTE_WEREWOLF_TO_POSSESSED"));
 				// 人狼から人狼への投票
 				else if(rc.isWolf(v.getAgent()) && rc.isWolf(v.getTarget()))
-					update(rc, "VOTE_WEREWOLF_TO_WEREWOLF");
+					probs.update(rc, rates.get("VOTE_WEREWOLF_TO_WEREWOLF"));
 			}
 		}
 	}	
@@ -215,7 +194,7 @@ public class Estimate {
 		
 		Set<RoleCombination> reserveRemove = new HashSet<>();
 		
-		for(RoleCombination rc: probabilities.keySet()){
+		for(RoleCombination rc: probs.getRoleCombinations()){
 			//人狼が襲撃される
 			if(rc.getWolfs().contains(agent)){
 				reserveRemove.add(rc);
@@ -223,7 +202,7 @@ public class Estimate {
 		}
 		
 		for(RoleCombination rr:reserveRemove)
-			remove(rr);
+			probs.remove(rr);
 	}
 	
 	public void updateTalk(Talk talk){
@@ -239,86 +218,77 @@ public class Estimate {
 			
 			if(content.getRole() == Role.BODYGUARD){
 				coBodyguardSet.add(talk.getAgent());
-				for(RoleCombination rc: probabilities.keySet()){
+				for(RoleCombination rc: probs.getRoleCombinations()){
 					if(rc.isVillagerTeam(talk.getAgent())){
 						// 村人陣営から二人目の狩人CO
 						if(countVillagerTeam(rc, coBodyguardSet) == 2)
-							update(rc, "2_BODYGUARD_CO_FROM_VILLAGER_TEAM");
+							probs.update(rc, rates.get("2_BODYGUARD_CO_FROM_VILLAGER_TEAM"));
 					}
 				}
 			}else if(content.getRole() == Role.SEER){
 				coSeerSet.add(talk.getAgent());
-				for(RoleCombination rc: probabilities.keySet()){
+				for(RoleCombination rc: probs.getRoleCombinations()){
 					if(rc.isVillagerTeam(talk.getAgent())){
 						// 村人陣営から二人目の占いCO
 						if(countVillagerTeam(rc, coSeerSet) == 2)
-							update(rc, "2_SEER_CO_FROM_VILLGER_TEAM");
+							probs.update(rc, rates.get("2_SEER_CO_FROM_VILLGER_TEAM"));
 						// 既に人狼陣営が占いCOしている状態での初めての村人陣営占いCO(①を解除)
 						if(countWereWolfTeam(rc, coSeerSet) > 0 && countVillagerTeam(rc, coSeerSet) == 1)
-							restore(rc, "ONLY_SEER_CO_FROM_WEREWOLF_TEAM");
+							probs.restore(rc, rates.get("ONLY_SEER_CO_FROM_WEREWOLF_TEAM"));
 					}else{
 						// 村人陣営が占いCOしていない状態で初めての人狼陣営占いCO(①)
 						if(countVillagerTeam(rc, coSeerSet) < 1 && countWereWolfTeam(rc, coSeerSet) == 1)
-							update(rc, "ONLY_SEER_CO_FROM_WEREWOLF_TEAM");
+							probs.update(rc, rates.get("ONLY_SEER_CO_FROM_WEREWOLF_TEAM"));
 					}
 				}
 			}else if(content.getRole() == Role.MEDIUM){
 				coMediumSet.add(talk.getAgent());
-				for(RoleCombination rc: probabilities.keySet()){
+				for(RoleCombination rc: probs.getRoleCombinations()){
 					if(rc.isVillagerTeam(talk.getAgent())){
 						// 村人陣営から二人目の霊能CO
 						if(countVillagerTeam(rc, coMediumSet) == 2)
-							update(rc, "2_MEDIUM_CO_FROM_VILLAGER_TEAM");
+							probs.update(rc, rates.get("2_MEDIUM_CO_FROM_VILLAGER_TEAM"));
 						// 既に人狼陣営が霊能COしている状態での初めての村人陣営霊能CO(②を解除)
 						if(countWereWolfTeam(rc, coMediumSet) > 0 && countVillagerTeam(rc, coMediumSet) == 1)
-							restore(rc, "ONLY_MEDIUM_CO_FROM_WEREWOLF_TEAM");
+							probs.restore(rc, rates.get("ONLY_MEDIUM_CO_FROM_WEREWOLF_TEAM"));
 					}else{
 						// 村人陣営が霊能COしていない状態で初めての人狼陣営霊能CO(②)
 						if(countVillagerTeam(rc, coMediumSet) < 1 && countWereWolfTeam(rc, coMediumSet) == 1)
-							update(rc, "ONLY_MEDIUM_CO_FROM_WEREWOLF_TEAM");
+							probs.update(rc, rates.get("ONLY_MEDIUM_CO_FROM_WEREWOLF_TEAM"));
 					}
 				}
 			}
 
-			//狂人がCO(霊能か占い）
-			if(content.getRole() == Role.MEDIUM || content.getRole() == Role.SEER){
-				for(RoleCombination rc: probabilities.keySet()){
-					if(rc.isPossessed(talk.getAgent())){
-						restore(rc, "NEVER_CO_FROM_POSSESSED");
-					}
-				}
-			}
-			
 			break;
 		case DIVINED:
-			for(RoleCombination rc: probabilities.keySet()){
+			for(RoleCombination rc: probs.getRoleCombinations()){
 				//狂人が人狼に黒出し
 				if(rc.isPossessed(talk.getAgent()) && rc.isWolf(content.getTarget()))
-					update(rc, "BLACK_DIVINED_POSSESSED_TO_WEREWOLF");
+					probs.update(rc, rates.get("BLACK_DIVINED_POSSESSED_TO_WEREWOLF"));
 				//人狼が狂人に黒出し
 				else if(rc.isWolf(talk.getAgent()) && rc.isPossessed(content.getTarget()))
-					update(rc, "BLACK_DIVINED_WEREWOLF_TO_POSSESSED");
+					probs.update(rc, rates.get("BLACK_DIVINED_WEREWOLF_TO_POSSESSED"));
 				//人狼が人狼に黒出し
 				else if(rc.isWolf(talk.getAgent()) && rc.isWolf(content.getTarget()))
-					update(rc, "BLACK_DIVINED_WEREWOLF_TO_WEREWOLF");	
+					probs.update(rc, rates.get("BLACK_DIVINED_WEREWOLF_TO_WEREWOLF"));	
 				//村人陣営が嘘の占い
 				else if(rc.isVillagerTeam(talk.getAgent())){
 					if(rc.isWolf(content.getTarget()) && content.getResult() == Species.HUMAN){
-						update(rc, "FALSE_DIVINED_FROM_VILLAGER_TEAM");
+						probs.update(rc, rates.get("FALSE_DIVINED_FROM_VILLAGER_TEAM"));
 					}else if(!rc.isWolf(content.getTarget()) && content.getResult() == Species.WEREWOLF){
-						update(rc, "FALSE_DIVINED_FROM_VILLAGER_TEAM");
+						probs.update(rc, rates.get("FALSE_DIVINED_FROM_VILLAGER_TEAM"));
 					}
 				}
 			}			
 			break;
 		case IDENTIFIED:
-			for(RoleCombination rc: probabilities.keySet()){
+			for(RoleCombination rc: probs.getRoleCombinations()){
 				//村人陣営が嘘の霊能
 				if(rc.isVillagerTeam(talk.getAgent())){
 					if(rc.isWolf(content.getTarget()) && content.getResult() == Species.HUMAN){
-						update(rc, "FALSE_INQUESTED_FROM_VILLAGER_TEAM");
+						probs.update(rc, rates.get("FALSE_INQUESTED_FROM_VILLAGER_TEAM"));
 					}else if(!rc.isWolf(content.getTarget()) && content.getResult() == Species.WEREWOLF){
-						update(rc, "FALSE_INQUESTED_FROM_VILLAGER_TEAM");
+						probs.update(rc, rates.get("FALSE_INQUESTED_FROM_VILLAGER_TEAM"));
 					}
 				}
 			}
@@ -330,21 +300,6 @@ public class Estimate {
 			break;
 		}
 			
-	}
-	
-	private void update(RoleCombination rc, String rateKey){
-		probabilities.put(rc, probabilities.get(rc) * rates.get(rateKey));
-		updated = true;
-	}
-	
-	private void restore(RoleCombination rc, String rateKey){
-		probabilities.put(rc, probabilities.get(rc) / rates.get(rateKey));
-		updated = true;
-	}
-	
-	private void remove(RoleCombination rc){
-		probabilities.remove(rc);
-		updated = true;
 	}
 	
 	private static int countVillagerTeam(RoleCombination rc, Collection<Agent> collection){
@@ -398,20 +353,17 @@ public class Estimate {
 				count.put(a, count.get(a) + 1);
 			}
 		}
-		
 		int max = -1;
 		for(int x: count.values()){
 			if(max < x){
 				max = x;
 			}
 		}
-		
 		for(Agent a: count.keySet()){
 			if(count.get(a) == max){
 				ret.add(a);
 			}
 		}
-		
 		return ret;
 	}
 
