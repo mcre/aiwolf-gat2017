@@ -71,18 +71,21 @@ public abstract class AbstractMcreRole implements EstimatePlayer {
 		
 		objectiveEstimate.dayStart();
 		objectiveEstimate.updateAliveAgentList(gameInfo.getAliveAgentList());
-		objectiveEstimate.updateAttackedAgent(gameInfo.getAttackedAgent());
 		objectiveEstimate.updateVoteList(gameInfo.getVoteList());
 		
 		subjectiveEstimate.dayStart();
 		subjectiveEstimate.updateAliveAgentList(gameInfo.getAliveAgentList());
-		subjectiveEstimate.updateAttackedAgent(gameInfo.getAttackedAgent());
 		subjectiveEstimate.updateVoteList(gameInfo.getVoteList());
 
 		pretendVillagerEstimate.dayStart();
 		pretendVillagerEstimate.updateAliveAgentList(gameInfo.getAliveAgentList());
-		pretendVillagerEstimate.updateAttackedAgent(gameInfo.getAttackedAgent());
 		pretendVillagerEstimate.updateVoteList(gameInfo.getVoteList());	
+		
+		for(Agent a: gameInfo.getLastDeadAgentList()){
+			objectiveEstimate.updateAttackedAgent(a);
+			subjectiveEstimate.updateAttackedAgent(a);
+			pretendVillagerEstimate.updateAttackedAgent(a);
+		}
 	}
 	
 	public Agent attack() {
