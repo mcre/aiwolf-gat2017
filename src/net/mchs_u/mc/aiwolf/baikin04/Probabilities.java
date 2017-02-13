@@ -34,8 +34,6 @@ public class Probabilities {
 			if(rc.isValid(agents.size(), gameSetting))
 				probs.put(rc, 1d);
 		}
-
-		System.out.println("probs: " + probs.size());
 	}
 	
 	private List<List<Integer>> makeLoops(int nFold, int num) {

@@ -23,8 +23,8 @@ public class McreWerewolf extends AbstractMcreRole {
 		super.initialize(gameInfo, gameSetting);
 
 		for(Agent a: getWolfList()){
-			subjectiveEstimate.updateDefinedRole(a, Role.WEREWOLF); 
-			pretendVillagerEstimate.updateTeamMemberWolf(getWolfList());
+			getSubjectiveEstimate().updateDefinedRole(a, Role.WEREWOLF); 
+			getPretendVillagerEstimate().updateTeamMemberWolf(getWolfList());
 		}
 		
 	}	
@@ -88,7 +88,7 @@ public class McreWerewolf extends AbstractMcreRole {
 		for(Agent a: getWolfList()){
 			candidate.remove(a);
 		}
-		return min(candidate, objectiveEstimate.getWerewolfLikeness(), false);	
+		return min(candidate, getObjectiveEstimate().getWerewolfLikeness(), false);	
 	}
 	
 	
@@ -98,7 +98,7 @@ public class McreWerewolf extends AbstractMcreRole {
 		List<Agent> candidate = new ArrayList<>(getGameInfo().getAliveAgentList());
 		candidate.remove(getGameInfo().getAgent());
 		
-		return max(candidate, pretendVillagerEstimate.getWerewolfLikeness(), false);
+		return max(candidate, getPretendVillagerEstimate().getWerewolfLikeness(), false);
 	}
 
 }

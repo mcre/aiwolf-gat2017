@@ -45,7 +45,7 @@ public class McreSeer extends McreVillager {
 		if(!divinedToday && j != null){
 			divinedToday = true;
 			divinedList.add(j.getTarget());
-			subjectiveEstimate.updateDefinedSpecies(j.getTarget(), j.getResult());//自分目線に占い情報を更新
+			getSubjectiveEstimate().updateDefinedSpecies(j.getTarget(), j.getResult());//自分目線に占い情報を更新
 			return new Content(new DivinedResultContentBuilder(j.getTarget(), j.getResult())).getText();
 		}
 		
@@ -65,14 +65,14 @@ public class McreSeer extends McreVillager {
 		List<Agent> tmp = candidate;
 
 		//占い師COした人は除く
-		for(Agent a:subjectiveEstimate.getCoSeerSet()){
+		for(Agent a: getSubjectiveEstimate().getCoSeerSet()){
 			candidate.remove(a);
 		}
 		if(candidate.size() == 0)
 			//誰も占う人が居ない場合のみ占い師COの人を占う
-			return max(tmp, subjectiveEstimate.getWerewolfLikeness(), false);
+			return max(tmp, getSubjectiveEstimate().getWerewolfLikeness(), false);
 		else
-			return max(candidate, subjectiveEstimate.getWerewolfLikeness(), false);
+			return max(candidate, getSubjectiveEstimate().getWerewolfLikeness(), false);
 	}	
 
 }

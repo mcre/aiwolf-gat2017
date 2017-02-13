@@ -1,4 +1,4 @@
-package net.mchs_u.mc.aiwolf.starter;
+package net.mchs_u.mc.aiwolf.common.starter;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -27,7 +27,7 @@ import org.aiwolf.server.util.MultiGameLogger;
 import org.aiwolf.ui.GameViewer;
 import org.aiwolf.ui.log.ContestResource;
 
-import net.mchs_u.mc.aiwolf.starter.component.PlayerDefinition;
+import net.mchs_u.mc.aiwolf.common.starter.component.PlayerDefinition;
 
 /**
  * @author m_cre

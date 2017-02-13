@@ -7,22 +7,23 @@ import java.util.Map;
 import java.util.Random;
 
 import org.aiwolf.common.data.Agent;
-import org.aiwolf.common.data.Player;
 import org.aiwolf.common.data.Role;
 import org.aiwolf.common.data.Talk;
 import org.aiwolf.common.net.GameInfo;
 import org.aiwolf.common.net.GameSetting;
 
 import net.mchs_u.mc.aiwolf.baikin04.Estimate;
+import net.mchs_u.mc.aiwolf.common.EstimatePlayer;
 
-public abstract class AbstractMcreRole implements Player {	
+public abstract class AbstractMcreRole implements EstimatePlayer {	
 	private static final String NAME = "m_cre";
 	private GameInfo gameInfo = null;
 	
-	protected int talkListHead = 0;
-	protected Estimate objectiveEstimate = null; //客観
-	protected Estimate subjectiveEstimate = null; //主観
-	protected Estimate pretendVillagerEstimate = null; //村人目線
+	private int talkListHead = 0;
+	
+	private Estimate objectiveEstimate = null; //客観
+	private Estimate subjectiveEstimate = null; //主観
+	private Estimate pretendVillagerEstimate = null; //村人目線
 	
 	private List<Double> random = null; //min, maxを選ぶ際に、同率のうちどれを優先にするかをゲームごとに乱数で決める。
 	
@@ -151,7 +152,7 @@ public abstract class AbstractMcreRole implements Player {
 	}
 	
 	//しんだひとをリストから除く
-	protected List<Agent> removeDeadAgent(Collection<Agent> agents){
+	protected List<Agent> removeDeadAgent(Collection<Agent> agents) {
 		List<Agent> ret = new ArrayList<>();
 		List<Agent> aliveList = gameInfo.getAliveAgentList();
 		for(Agent a: agents){
@@ -164,4 +165,15 @@ public abstract class AbstractMcreRole implements Player {
 		}
 		return ret;
 	}
+	
+	public Estimate getObjectiveEstimate() {
+		return objectiveEstimate;
+	}
+	public Estimate getSubjectiveEstimate() {
+		return subjectiveEstimate;
+	}
+	public Estimate getPretendVillagerEstimate() {
+		return pretendVillagerEstimate;
+	}
+	
 }

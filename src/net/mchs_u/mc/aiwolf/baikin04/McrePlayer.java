@@ -1,7 +1,6 @@
 package net.mchs_u.mc.aiwolf.baikin04;
 
 import org.aiwolf.common.data.Agent;
-import org.aiwolf.common.data.Player;
 import org.aiwolf.common.data.Role;
 import org.aiwolf.common.net.GameInfo;
 import org.aiwolf.common.net.GameSetting;
@@ -12,75 +11,88 @@ import net.mchs_u.mc.aiwolf.baikin04.role.McrePossessed;
 import net.mchs_u.mc.aiwolf.baikin04.role.McreSeer;
 import net.mchs_u.mc.aiwolf.baikin04.role.McreVillager;
 import net.mchs_u.mc.aiwolf.baikin04.role.McreWerewolf;
+import net.mchs_u.mc.aiwolf.common.EstimatePlayer;
 
-public class McrePlayer implements Player {
-	private Player rolePlayer;
+public class McrePlayer implements EstimatePlayer {
+	private EstimatePlayer player;
 	
 	public String getName() {
-		return rolePlayer.getName();
+		return player.getName();
 	}
 
 	public final void update(GameInfo gameInfo) {
-		rolePlayer.update(gameInfo);
+		player.update(gameInfo);
 	}
 
 	public final void initialize(GameInfo gameInfo, GameSetting gameSetting) {
 		Role myRole = gameInfo.getRole();
 		switch (myRole) {
 		case VILLAGER:
-			rolePlayer = new McreVillager();
+			player = new McreVillager();
 			break;
 		case SEER:
-			rolePlayer = new McreSeer();
+			player = new McreSeer();
 			break;
 		case MEDIUM:
-			rolePlayer = new McreMedium();
+			player = new McreMedium();
 			break;
 		case BODYGUARD:
-			rolePlayer = new McreBodyguard();
+			player = new McreBodyguard();
 			break;
 		case POSSESSED:
-			rolePlayer = new McrePossessed();
+			player = new McrePossessed();
 			break;
 		case WEREWOLF:
-			rolePlayer = new McreWerewolf();
+			player = new McreWerewolf();
 			break;
 		default:
-			rolePlayer = new McreVillager();
+			player = new McreVillager();
 			break;
 		}
-		rolePlayer.initialize(gameInfo, gameSetting);
+		player.initialize(gameInfo, gameSetting);
 	}
 
 	public final void dayStart() {
-		rolePlayer.dayStart();
+		player.dayStart();
 	}
 
 	public final String talk() {
-		return rolePlayer.talk();
+		return player.talk();
 	}
 
 	public final String whisper() {
-		return rolePlayer.whisper();
+		return player.whisper();
 	}
 
 	public final Agent vote() {
-		return rolePlayer.vote();
+		return player.vote();
 	}
 
 	public final Agent attack() {
-		return rolePlayer.attack();
+		return player.attack();
 	}
 
 	public final Agent divine() {
-		return rolePlayer.divine();
+		return player.divine();
 	}
 
 	public final Agent guard() {
-		return rolePlayer.guard();
+		return player.guard();
 	}
 
 	public final void finish() {
-		rolePlayer.finish();
+		player.finish();
+	}
+
+	public Estimate getObjectiveEstimate() {
+		return player.getObjectiveEstimate();
+	}
+
+	public Estimate getSubjectiveEstimate() {
+		return player.getSubjectiveEstimate();
+	}
+
+	public Estimate getPretendVillagerEstimate() {
+		return player.getPretendVillagerEstimate();
 	}
 }

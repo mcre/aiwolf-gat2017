@@ -1,7 +1,7 @@
 /**
  * 
  */
-package net.mchs_u.mc.aiwolf.starter.component;
+package net.mchs_u.mc.aiwolf.common.starter.component;
 
 import org.aiwolf.common.data.Agent;
 import org.aiwolf.common.data.Player;

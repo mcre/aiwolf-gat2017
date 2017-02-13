@@ -37,7 +37,7 @@ public class McreMedium extends McreVillager {
 		Judge j = getGameInfo().getMediumResult();
 		if(!inquestedToday && j != null){
 			inquestedToday = true;
-			subjectiveEstimate.updateDefinedSpecies(j.getTarget(), j.getResult());//自分目線に霊能情報を更新
+			getSubjectiveEstimate().updateDefinedSpecies(j.getTarget(), j.getResult());//自分目線に霊能情報を更新
 			return new Content(new IdentContentBuilder(j.getTarget(), j.getResult())).getText();
 		}
 		

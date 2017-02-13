@@ -50,7 +50,7 @@ public class McrePossessed extends AbstractMcreRole {
 			Agent target = decideDivineTarget();
 			if(target != null){
 				divinedList.add(target);
-				pretendVillagerEstimate.updateDefinedSpecies(target, Species.HUMAN);//村人目線に占い情報を更新
+				getPretendVillagerEstimate().updateDefinedSpecies(target, Species.HUMAN);//村人目線に占い情報を更新
 				return new Content(new DivinedResultContentBuilder(target, Species.WEREWOLF)).getText();
 			}
 		}
@@ -81,7 +81,7 @@ public class McrePossessed extends AbstractMcreRole {
 		for(Agent a:divinedList){
 			candidate.remove(a);
 		}
-		return max(candidate, subjectiveEstimate.getVillagerTeamLikeness(), true);
+		return max(candidate, getSubjectiveEstimate().getVillagerTeamLikeness(), true);
 	}
 	
 	//村人目線で、生存者のうち最も人狼っぽいひとに投票
@@ -89,7 +89,7 @@ public class McrePossessed extends AbstractMcreRole {
 		List<Agent> candidate = new ArrayList<>(getGameInfo().getAliveAgentList());
 		candidate.remove(getGameInfo().getAgent());
 		
-		return max(candidate, pretendVillagerEstimate.getWerewolfLikeness(), false);
+		return max(candidate, getPretendVillagerEstimate().getWerewolfLikeness(), false);
 	}
 
 }

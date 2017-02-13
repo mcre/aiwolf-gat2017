@@ -12,6 +12,6 @@ public class McreBodyguard extends McreVillager {
 	public Agent guard() {
 		List<Agent> candidate = new ArrayList<>(getGameInfo().getAliveAgentList());
 		candidate.remove(getGameInfo().getAgent());
-		return max(candidate, subjectiveEstimate.getVillagerTeamLikeness(), true);
+		return max(candidate, getSubjectiveEstimate().getVillagerTeamLikeness(), true);
 	}	
 }

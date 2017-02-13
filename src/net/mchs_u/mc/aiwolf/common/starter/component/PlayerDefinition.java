@@ -1,10 +1,12 @@
 /**
  * 
  */
-package net.mchs_u.mc.aiwolf.starter.component;
+package net.mchs_u.mc.aiwolf.common.starter.component;
 
 import org.aiwolf.common.data.Player;
 import org.aiwolf.common.data.Role;
+
+import net.mchs_u.mc.aiwolf.common.EstimatePlayer;
 
 /**
  * @author m_cre
@@ -14,11 +16,13 @@ public class PlayerDefinition {
 	private Class<?> playerClass;
 	private String name;
 	private Role role;
+	private boolean isVisualize;
 	
-	public PlayerDefinition(Class<?> samplePlayerClass, String name, Role role) throws InstantiationException, IllegalAccessException{
+	public PlayerDefinition(Class<?> samplePlayerClass, boolean isVisualize, Role role, String name) throws InstantiationException, IllegalAccessException{
 		this.playerClass = samplePlayerClass;
-		this.name = name;
+		this.isVisualize = isVisualize;
 		this.role = role;
+		this.name = name;
 		
 		playerClass.newInstance(); // 例外発生確認用
 	}
@@ -28,13 +32,15 @@ public class PlayerDefinition {
 	}
 	
 	public Player getNewPlayerInstance() {
+		Player player = null;
 		try {
-			Player player = (Player)playerClass.newInstance();
-			if(name != null)
-				return new RenamedPlayer(player, name);
-			return player;
+			player = (Player)playerClass.newInstance();
 		} catch (InstantiationException | IllegalAccessException e){}
-		return null;
+		if(name != null)
+			player = new RenamedPlayer(player, name);
+		if(isVisualize && player instanceof EstimatePlayer)
+			player = new DebugVisualizePlayer((EstimatePlayer)player);
+		return player;
 	}
 	
 	public String getName() {
