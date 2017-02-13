@@ -196,7 +196,7 @@ public class Estimate {
 		
 		for(RoleCombination rc: probs.getRoleCombinations()){
 			//人狼が襲撃される
-			if(rc.getWolfs().contains(agent)){
+			if(rc.isWolf(agent)){
 				reserveRemove.add(rc);
 			}
 		}

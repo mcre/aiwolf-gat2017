@@ -89,4 +89,9 @@ public class RoleCombination {
 		return true;
 	}
 
+	@Override
+	public String toString() {
+		return "RoleCombination [wolfs=" + wolfs + ", possesseds=" + possesseds + "]";
+	}
+	
 }
