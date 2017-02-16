@@ -40,7 +40,7 @@ public abstract class AbstractMcreRole implements EstimatePlayer {
 		pretendVillagerEstimate.updateDefinedRole(getGameInfo().getAgent(), Role.VILLAGER);
 				
 		random = new ArrayList<>();
-		for(int i = 0; i < 15; i++){
+		for(int i = 0; i < gameSetting.getPlayerNum(); i++){
 			random.add(Math.random() / 100000d);
 		}			
 	}
