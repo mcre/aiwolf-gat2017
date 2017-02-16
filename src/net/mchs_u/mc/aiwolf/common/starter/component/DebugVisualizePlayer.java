@@ -37,7 +37,7 @@ public class DebugVisualizePlayer implements EstimatePlayer {
 		
 		estimateGraphs = new ArrayList<>();
 		for(int i = 0; i < 3; i++)
-			estimateGraphs.add(new EstimateGraph());
+			estimateGraphs.add(new EstimateGraph(gameSetting.getPlayerNum()));
 		
 		frame = new JFrame("debug");
 		frame.setSize(400, 800);
