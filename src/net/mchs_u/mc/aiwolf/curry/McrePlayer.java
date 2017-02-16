@@ -1,18 +1,18 @@
-package net.mchs_u.mc.aiwolf.baikin04;
+package net.mchs_u.mc.aiwolf.curry;
 
 import org.aiwolf.common.data.Agent;
 import org.aiwolf.common.data.Role;
 import org.aiwolf.common.net.GameInfo;
 import org.aiwolf.common.net.GameSetting;
 
-import net.mchs_u.mc.aiwolf.baikin04.role.McreBodyguard;
-import net.mchs_u.mc.aiwolf.baikin04.role.McreMedium;
-import net.mchs_u.mc.aiwolf.baikin04.role.McrePossessed;
-import net.mchs_u.mc.aiwolf.baikin04.role.McreSeer;
-import net.mchs_u.mc.aiwolf.baikin04.role.McreVillager;
-import net.mchs_u.mc.aiwolf.baikin04.role.McreWerewolf;
 import net.mchs_u.mc.aiwolf.common.AbstractEstimate;
 import net.mchs_u.mc.aiwolf.common.EstimatePlayer;
+import net.mchs_u.mc.aiwolf.curry.role.McreBodyguard;
+import net.mchs_u.mc.aiwolf.curry.role.McreMedium;
+import net.mchs_u.mc.aiwolf.curry.role.McrePossessed;
+import net.mchs_u.mc.aiwolf.curry.role.McreSeer;
+import net.mchs_u.mc.aiwolf.curry.role.McreVillager;
+import net.mchs_u.mc.aiwolf.curry.role.McreWerewolf;
 
 public class McrePlayer implements EstimatePlayer {
 	private EstimatePlayer player;

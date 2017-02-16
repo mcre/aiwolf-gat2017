@@ -10,7 +10,7 @@ import org.aiwolf.common.data.Agent;
 import org.aiwolf.common.net.GameInfo;
 import org.aiwolf.common.net.GameSetting;
 
-import net.mchs_u.mc.aiwolf.baikin04.Estimate;
+import net.mchs_u.mc.aiwolf.common.AbstractEstimate;
 import net.mchs_u.mc.aiwolf.common.EstimatePlayer;
 
 public class DebugVisualizePlayer implements EstimatePlayer {
@@ -89,15 +89,15 @@ public class DebugVisualizePlayer implements EstimatePlayer {
 		frame.dispose();
 	}
 	
-	public Estimate getObjectiveEstimate() {
+	public AbstractEstimate getObjectiveEstimate() {
 		return player.getObjectiveEstimate();
 	}
 
-	public Estimate getSubjectiveEstimate() {
+	public AbstractEstimate getSubjectiveEstimate() {
 		return player.getSubjectiveEstimate();
 	}
 
-	public Estimate getPretendVillagerEstimate() {
+	public AbstractEstimate getPretendVillagerEstimate() {
 		return player.getPretendVillagerEstimate();
 	}
 	

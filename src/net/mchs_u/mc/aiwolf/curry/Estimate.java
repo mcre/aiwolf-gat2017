@@ -1,4 +1,4 @@
-package net.mchs_u.mc.aiwolf.baikin04;
+package net.mchs_u.mc.aiwolf.curry;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,9 +16,7 @@ import org.aiwolf.common.data.Talk;
 import org.aiwolf.common.data.Vote;
 import org.aiwolf.common.net.GameSetting;
 
-import net.mchs_u.mc.aiwolf.common.AbstractEstimate;
-
-public class Estimate extends AbstractEstimate {
+public class Estimate {
 	private Map<String,Double> rates = null;
 	
 	private List<Agent> agents = null;

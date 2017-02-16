@@ -36,10 +36,10 @@ public class PlayerDefinition {
 		try {
 			player = (Player)playerClass.newInstance();
 		} catch (InstantiationException | IllegalAccessException e){}
-		if(name != null)
-			player = new RenamedPlayer(player, name);
 		if(isVisualize && player instanceof EstimatePlayer)
 			player = new DebugVisualizePlayer((EstimatePlayer)player);
+		if(name != null)
+			player = new RenamedPlayer(player, name);
 		return player;
 	}
 	
