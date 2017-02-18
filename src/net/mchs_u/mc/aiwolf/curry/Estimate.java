@@ -16,7 +16,9 @@ import org.aiwolf.common.data.Talk;
 import org.aiwolf.common.data.Vote;
 import org.aiwolf.common.net.GameSetting;
 
-public class Estimate {
+import net.mchs_u.mc.aiwolf.common.AbstractEstimate;
+
+public class Estimate extends AbstractEstimate{
 	private Map<String,Double> rates = null;
 	
 	private List<Agent> agents = null;
