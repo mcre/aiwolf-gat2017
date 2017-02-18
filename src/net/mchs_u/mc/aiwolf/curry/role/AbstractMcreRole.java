@@ -21,8 +21,8 @@ public abstract class AbstractMcreRole implements EstimatePlayer {
 	
 	private int talkListHead = 0;
 	
-	private Estimate objectiveEstimate = null; //客観
 	private Estimate subjectiveEstimate = null; //主観
+	private Estimate objectiveEstimate = null; //客観
 	private Estimate pretendVillagerEstimate = null; //村人目線
 	
 	private List<Double> random = null; //min, maxを選ぶ際に、同率のうちどれを優先にするかをゲームごとに乱数で決める。
@@ -32,8 +32,8 @@ public abstract class AbstractMcreRole implements EstimatePlayer {
 		
 		List<Agent> agents = gameInfo.getAgentList();
 
-		objectiveEstimate       = new Estimate(agents, gameSetting);
 		subjectiveEstimate      = new Estimate(agents, gameSetting);
+		objectiveEstimate       = new Estimate(agents, gameSetting);
 		pretendVillagerEstimate = new Estimate(agents, gameSetting);
 		
 		subjectiveEstimate.updateDefinedRole(getGameInfo().getAgent(), getGameInfo().getRole());
@@ -50,8 +50,8 @@ public abstract class AbstractMcreRole implements EstimatePlayer {
 		
 		List<Talk> talkList = gameInfo.getTalkList();
 		for(int i = talkListHead; i < talkList.size(); i++){
-			objectiveEstimate.updateTalk(talkList.get(i));
 			subjectiveEstimate.updateTalk(talkList.get(i));
+			objectiveEstimate.updateTalk(talkList.get(i));
 			pretendVillagerEstimate.updateTalk(talkList.get(i));
 			
 			talkListHead++;
@@ -69,23 +69,9 @@ public abstract class AbstractMcreRole implements EstimatePlayer {
 	public void dayStart() {
 		talkListHead = 0;
 		
-		objectiveEstimate.dayStart();
-		objectiveEstimate.updateAliveAgentList(gameInfo.getAliveAgentList());
-		objectiveEstimate.updateVoteList(gameInfo.getVoteList());
-		
-		subjectiveEstimate.dayStart();
-		subjectiveEstimate.updateAliveAgentList(gameInfo.getAliveAgentList());
-		subjectiveEstimate.updateVoteList(gameInfo.getVoteList());
-
-		pretendVillagerEstimate.dayStart();
-		pretendVillagerEstimate.updateAliveAgentList(gameInfo.getAliveAgentList());
-		pretendVillagerEstimate.updateVoteList(gameInfo.getVoteList());	
-		
-		for(Agent a: gameInfo.getLastDeadAgentList()){
-			objectiveEstimate.updateAttackedAgent(a);
-			subjectiveEstimate.updateAttackedAgent(a);
-			pretendVillagerEstimate.updateAttackedAgent(a);
-		}
+		subjectiveEstimate.dayStart(gameInfo);
+		objectiveEstimate.dayStart(gameInfo);
+		pretendVillagerEstimate.dayStart(gameInfo);
 	}
 	
 	public Agent attack() {
@@ -169,12 +155,14 @@ public abstract class AbstractMcreRole implements EstimatePlayer {
 		return ret;
 	}
 	
-	public Estimate getObjectiveEstimate() {
-		return objectiveEstimate;
-	}
 	public Estimate getSubjectiveEstimate() {
 		return subjectiveEstimate;
 	}
+	
+	public Estimate getObjectiveEstimate() {
+		return objectiveEstimate;
+	}
+	
 	public Estimate getPretendVillagerEstimate() {
 		return pretendVillagerEstimate;
 	}

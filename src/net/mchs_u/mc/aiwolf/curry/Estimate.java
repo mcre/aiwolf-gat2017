@@ -14,6 +14,7 @@ import org.aiwolf.common.data.Role;
 import org.aiwolf.common.data.Species;
 import org.aiwolf.common.data.Talk;
 import org.aiwolf.common.data.Vote;
+import org.aiwolf.common.net.GameInfo;
 import org.aiwolf.common.net.GameSetting;
 
 import net.mchs_u.mc.aiwolf.common.AbstractEstimate;
@@ -52,6 +53,8 @@ public class Estimate extends AbstractEstimate{
 		rates.put("ONLY_SEER_CO_FROM_WEREWOLF_TEAM"    , 0.010d);
 		rates.put("ONLY_MEDIUM_CO_FROM_WEREWOLF_TEAM"  , 0.010d);
 		rates.put("TEAM_MEMBER_WOLF"                   , 0.500d);
+		
+		rates.put("GUARDED_WEREWOLF_WHEN_ATTACK_FAILURE", 0.100d);
 				
 		coSeerSet = new HashSet<>();
 		coMediumSet = new HashSet<>();
@@ -62,10 +65,6 @@ public class Estimate extends AbstractEstimate{
 		villagerTeamLikeness = new HashMap<>();
 
 		probs = new Probabilities(agents, gameSetting);
-	}
-	
-	public void dayStart(){
-		todaysVotePlanMap = new HashMap<>();
 	}
 	
 	public Map<Agent, Double> getWerewolfLikeness() {
@@ -107,12 +106,19 @@ public class Estimate extends AbstractEstimate{
 		probs.resetUpdated();
 	}
 	
+	public void dayStart(GameInfo gameInfo){
+		todaysVotePlanMap = new HashMap<>();
+		updateAliveAgentList(gameInfo.getAliveAgentList());
+		updateDeadAgentList(gameInfo.getLastDeadAgentList());
+		updateVoteList(gameInfo.getVoteList());
+	}
+	
 	//終了条件を満たしているパターン(狼が全滅してるのにゲームが終わってないなど)を削除
-	public void updateAliveAgentList(List<Agent> aliveAgents){		
+	private void updateAliveAgentList(List<Agent> agents){		
 		Set<RoleCombination> reserveRemove = new HashSet<>();
 		for(RoleCombination rc: probs.getRoleCombinations()){
 			int countWerewolf = 0;
-			for(Agent a: aliveAgents){
+			for(Agent a: agents){
 				if(rc.isWolf(a))
 					countWerewolf++;
 			}
@@ -120,7 +126,7 @@ public class Estimate extends AbstractEstimate{
 			if(countWerewolf == 0)
 				reserveRemove.add(rc);
 			//狼が人間と同数以上
-			else if(countWerewolf >= aliveAgents.size() - countWerewolf)
+			else if(countWerewolf >= agents.size() - countWerewolf)
 				reserveRemove.add(rc);
 		}
 		for(RoleCombination rr:reserveRemove)
@@ -174,7 +180,20 @@ public class Estimate extends AbstractEstimate{
 		}
 	}
 	
-	public void updateVoteList(List<Vote> voteList){
+	//襲撃失敗の場合、守ったエージェントが狼である確率を下げる（狩人の主観のときのみに使う）
+	public void updateGuardedResult(Agent guardedAgent, int deadAgentsCount) {
+		if(guardedAgent == null)
+			return;
+		if(deadAgentsCount > 0)
+			return;
+		
+		for(RoleCombination rc: probs.getRoleCombinations()){
+			if(rc.isWolf(guardedAgent))
+				probs.update(rc, rates.get("GUARDED_WEREWOLF_WHEN_ATTACK_FAILURE"));
+		}
+	}
+	
+	private void updateVoteList(List<Vote> voteList){
 		for(Vote v: voteList){
 			for(RoleCombination rc: probs.getRoleCombinations()){
 				// 狂人から人狼への投票
@@ -190,16 +209,15 @@ public class Estimate extends AbstractEstimate{
 		}
 	}	
 	
-	public void updateAttackedAgent(Agent agent){
-		if(agent == null)
-			return;
-		
+	private void updateDeadAgentList(List<Agent> agents){
 		Set<RoleCombination> reserveRemove = new HashSet<>();
 		
 		for(RoleCombination rc: probs.getRoleCombinations()){
-			//人狼が襲撃される
-			if(rc.isWolf(agent)){
-				reserveRemove.add(rc);
+			for(Agent agent: agents) {
+				//人狼が襲撃される
+				if(rc.isWolf(agent)){
+					reserveRemove.add(rc);
+				}
 			}
 		}
 		
