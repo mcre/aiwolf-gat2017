@@ -38,6 +38,9 @@ public class McreWerewolf extends AbstractMcreRole {
 	
 	@Override
 	public String whisper() {
+		if(getGameInfo().getDay() < 1)
+			return Talk.OVER;
+		
 		Agent target = decideAttackTarget();
 		if(target == null)
 			return Talk.SKIP;
