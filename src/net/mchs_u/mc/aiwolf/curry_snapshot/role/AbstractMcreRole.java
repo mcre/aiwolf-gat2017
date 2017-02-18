@@ -1,4 +1,4 @@
-package net.mchs_u.mc.aiwolf.curry.role;
+package net.mchs_u.mc.aiwolf.curry_snapshot.role;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -12,8 +12,8 @@ import org.aiwolf.common.data.Talk;
 import org.aiwolf.common.net.GameInfo;
 import org.aiwolf.common.net.GameSetting;
 
+import net.mchs_u.mc.aiwolf.curry_snapshot.Estimate;
 import net.mchs_u.mc.aiwolf.common.EstimatePlayer;
-import net.mchs_u.mc.aiwolf.curry.Estimate;
 
 public abstract class AbstractMcreRole implements EstimatePlayer {	
 	private static final String NAME = "m_cre";
