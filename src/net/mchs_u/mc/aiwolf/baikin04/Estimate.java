@@ -17,6 +17,8 @@ import org.aiwolf.common.data.Vote;
 import org.aiwolf.common.net.GameSetting;
 
 import net.mchs_u.mc.aiwolf.common.AbstractEstimate;
+import net.mchs_u.mc.aiwolf.common.Probabilities;
+import net.mchs_u.mc.aiwolf.common.RoleCombination;
 
 public class Estimate extends AbstractEstimate {
 	private Map<String,Double> rates = null;

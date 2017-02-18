@@ -1,4 +1,4 @@
-package net.mchs_u.mc.aiwolf.curry.role;
+package net.mchs_u.mc.aiwolf.baikin04;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.aiwolf.client.lib.AttackContentBuilder;
-import org.aiwolf.client.lib.ComingoutContentBuilder;
 import org.aiwolf.client.lib.Content;
 import org.aiwolf.client.lib.VoteContentBuilder;
 import org.aiwolf.common.data.Agent;
@@ -18,8 +17,6 @@ import org.aiwolf.common.net.GameSetting;
 public class McreWerewolf extends AbstractMcreRole {	
 	protected Agent declaredVoteTarget = null; //今日最後に投票宣言をした対象
 	protected Agent declaredAttackTarget = null; //今日最後に襲撃宣言をした対象
-	
-	private int wisperTurn; // 当日の囁きターン
 
 	@Override
 	public void initialize(GameInfo gameInfo, GameSetting gameSetting) {
@@ -37,22 +34,10 @@ public class McreWerewolf extends AbstractMcreRole {
 		super.dayStart();
 		declaredVoteTarget = null;
 		declaredAttackTarget = null;
-		
-		wisperTurn = -1;
 	}
 	
 	@Override
 	public String whisper() {
-		wisperTurn++;
-		
-		if(getGameInfo().getDay() == 0) {
-			if(wisperTurn == 0)
-				// 騙らない宣言
-				return new Content(new ComingoutContentBuilder(getGameInfo().getAgent(), Role.VILLAGER)).getText();
-			else
-				return Talk.OVER;
-		}
-		
 		Agent target = decideAttackTarget();
 		if(target == null)
 			return Talk.SKIP;

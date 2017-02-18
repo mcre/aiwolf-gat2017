@@ -1,4 +1,4 @@
-package net.mchs_u.mc.aiwolf.baikin04.role;
+package net.mchs_u.mc.aiwolf.baikin04;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -12,7 +12,6 @@ import org.aiwolf.common.data.Talk;
 import org.aiwolf.common.net.GameInfo;
 import org.aiwolf.common.net.GameSetting;
 
-import net.mchs_u.mc.aiwolf.baikin04.Estimate;
 import net.mchs_u.mc.aiwolf.common.EstimatePlayer;
 
 public abstract class AbstractMcreRole implements EstimatePlayer {	

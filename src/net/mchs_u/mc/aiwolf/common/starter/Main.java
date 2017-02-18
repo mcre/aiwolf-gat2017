@@ -16,8 +16,8 @@ public class Main {
 		boolean isSaveResult = true;
 		
 		List<PlayerDefinition> playerDefinitions = new ArrayList<>();
-		playerDefinitions.add(new PlayerDefinition(net.mchs_u.mc.aiwolf.baikin04.McrePlayer.class, true, null, "baikin"));
-		playerDefinitions.add(new PlayerDefinition(net.mchs_u.mc.aiwolf.curry_snapshot.McrePlayer.class, false, null, "curry_ss"));
+		playerDefinitions.add(new PlayerDefinition(net.mchs_u.mc.aiwolf.baikin04.McrePlayer.class, false, null, "baikin"));
+		playerDefinitions.add(new PlayerDefinition(net.mchs_u.mc.aiwolf.curry_snapshot.McrePlayer.class, false, null, "ss"));
 		playerDefinitions.add(new PlayerDefinition(net.mchs_u.mc.aiwolf.curry.McrePlayer.class, isVisualize, null, "curry"));
 		
 		int count = 0;

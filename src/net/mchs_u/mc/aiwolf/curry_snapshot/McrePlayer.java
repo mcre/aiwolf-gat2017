@@ -7,12 +7,7 @@ import org.aiwolf.common.net.GameSetting;
 
 import net.mchs_u.mc.aiwolf.common.AbstractEstimate;
 import net.mchs_u.mc.aiwolf.common.EstimatePlayer;
-import net.mchs_u.mc.aiwolf.curry_snapshot.role.McreBodyguard;
-import net.mchs_u.mc.aiwolf.curry_snapshot.role.McreMedium;
-import net.mchs_u.mc.aiwolf.curry_snapshot.role.McrePossessed;
-import net.mchs_u.mc.aiwolf.curry_snapshot.role.McreSeer;
-import net.mchs_u.mc.aiwolf.curry_snapshot.role.McreVillager;
-import net.mchs_u.mc.aiwolf.curry_snapshot.role.McreWerewolf;
+
 
 public class McrePlayer implements EstimatePlayer {
 	private EstimatePlayer player;

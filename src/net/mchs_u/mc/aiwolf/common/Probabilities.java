@@ -1,4 +1,4 @@
-package net.mchs_u.mc.aiwolf.curry;
+package net.mchs_u.mc.aiwolf.common;
 
 import java.util.ArrayList;
 import java.util.HashMap;

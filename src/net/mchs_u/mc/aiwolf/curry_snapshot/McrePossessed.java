@@ -1,4 +1,4 @@
-package net.mchs_u.mc.aiwolf.curry_snapshot.role;
+package net.mchs_u.mc.aiwolf.curry_snapshot;
 
 import java.util.ArrayList;
 import java.util.List;

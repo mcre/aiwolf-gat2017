@@ -1,4 +1,4 @@
-package net.mchs_u.mc.aiwolf.curry.role;
+package net.mchs_u.mc.aiwolf.baikin04;
 
 import org.aiwolf.client.lib.ComingoutContentBuilder;
 import org.aiwolf.client.lib.Content;
