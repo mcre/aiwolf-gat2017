@@ -27,10 +27,7 @@ public class Estimate extends AbstractEstimate{
 	private List<Agent> agents = null;
 	
 	private Probabilities probs = null;
-	private Set<Agent> coSeerSet = null; 
-	private Set<Agent> coMediumSet = null;
-	private Set<Agent> coBodyguardSet = null;
-	private Set<Agent> coSet = null;
+	private Map<Agent, Role> coMap = null;
 	
 	private Map<Agent, Double> werewolfLikeness = null;
 	private Map<Agent, Double> villagerTeamLikeness = null;
@@ -57,11 +54,8 @@ public class Estimate extends AbstractEstimate{
 		rates.put("TEAM_MEMBER_WOLF"                   , 0.500d);
 		
 		rates.put("GUARDED_WEREWOLF_WHEN_ATTACK_FAILURE", 0.100d);
-				
-		coSeerSet = new HashSet<>();
-		coMediumSet = new HashSet<>();
-		coBodyguardSet = new HashSet<>();
-		coSet = new HashSet<>();
+		
+		coMap = new HashMap<>();
 		
 		werewolfLikeness = new HashMap<>();
 		villagerTeamLikeness = new HashMap<>();
@@ -232,50 +226,48 @@ public class Estimate extends AbstractEstimate{
 		
 		switch (content.getTopic()) {
 		case COMINGOUT:
-			if(!talk.getAgent().equals(content.getTarget()))//自分自身のCOじゃない場合は無視
+			if(!talk.getAgent().equals(content.getTarget())) // 自分自身のCOじゃない場合は無視
 				break;
-			if(coSet.contains(talk.getAgent())) //同じAgentの2回目以降のCOは無視
+			if(coMap.get(content.getTarget()) == content.getRole()) // 同じ内容の2度目以降のCOは無視
 				break;
-			coSet.add(talk.getAgent());
+			
+			coMap.put(content.getTarget(), content.getRole());
 			
 			if(content.getRole() == Role.BODYGUARD){
-				coBodyguardSet.add(talk.getAgent());
 				for(RoleCombination rc: probs.getRoleCombinations()){
 					if(rc.isVillagerTeam(talk.getAgent())){
 						// 村人陣営から二人目の狩人CO
-						if(countVillagerTeam(rc, coBodyguardSet) == 2)
+						if(countVillagerTeam(rc, getCoSet(Role.BODYGUARD)) == 2)
 							probs.update(rc, rates.get("2_BODYGUARD_CO_FROM_VILLAGER_TEAM"));
 					}
 				}
 			}else if(content.getRole() == Role.SEER){
-				coSeerSet.add(talk.getAgent());
 				for(RoleCombination rc: probs.getRoleCombinations()){
 					if(rc.isVillagerTeam(talk.getAgent())){
 						// 村人陣営から二人目の占いCO
-						if(countVillagerTeam(rc, coSeerSet) == 2)
+						if(countVillagerTeam(rc, getCoSet(Role.SEER)) == 2)
 							probs.update(rc, rates.get("2_SEER_CO_FROM_VILLGER_TEAM"));
 						// 既に人狼陣営が占いCOしている状態での初めての村人陣営占いCO(①を解除)
-						if(countWereWolfTeam(rc, coSeerSet) > 0 && countVillagerTeam(rc, coSeerSet) == 1)
+						if(countWereWolfTeam(rc, getCoSet(Role.SEER)) > 0 && countVillagerTeam(rc, getCoSet(Role.SEER)) == 1)
 							probs.restore(rc, rates.get("ONLY_SEER_CO_FROM_WEREWOLF_TEAM"));
 					}else{
 						// 村人陣営が占いCOしていない状態で初めての人狼陣営占いCO(①)
-						if(countVillagerTeam(rc, coSeerSet) < 1 && countWereWolfTeam(rc, coSeerSet) == 1)
+						if(countVillagerTeam(rc, getCoSet(Role.SEER)) < 1 && countWereWolfTeam(rc, getCoSet(Role.SEER)) == 1)
 							probs.update(rc, rates.get("ONLY_SEER_CO_FROM_WEREWOLF_TEAM"));
 					}
 				}
 			}else if(content.getRole() == Role.MEDIUM){
-				coMediumSet.add(talk.getAgent());
 				for(RoleCombination rc: probs.getRoleCombinations()){
 					if(rc.isVillagerTeam(talk.getAgent())){
 						// 村人陣営から二人目の霊能CO
-						if(countVillagerTeam(rc, coMediumSet) == 2)
+						if(countVillagerTeam(rc, getCoSet(Role.MEDIUM)) == 2)
 							probs.update(rc, rates.get("2_MEDIUM_CO_FROM_VILLAGER_TEAM"));
 						// 既に人狼陣営が霊能COしている状態での初めての村人陣営霊能CO(②を解除)
-						if(countWereWolfTeam(rc, coMediumSet) > 0 && countVillagerTeam(rc, coMediumSet) == 1)
+						if(countWereWolfTeam(rc, getCoSet(Role.MEDIUM)) > 0 && countVillagerTeam(rc, getCoSet(Role.MEDIUM)) == 1)
 							probs.restore(rc, rates.get("ONLY_MEDIUM_CO_FROM_WEREWOLF_TEAM"));
 					}else{
 						// 村人陣営が霊能COしていない状態で初めての人狼陣営霊能CO(②)
-						if(countVillagerTeam(rc, coMediumSet) < 1 && countWereWolfTeam(rc, coMediumSet) == 1)
+						if(countVillagerTeam(rc, getCoSet(Role.MEDIUM)) < 1 && countWereWolfTeam(rc, getCoSet(Role.MEDIUM)) == 1)
 							probs.update(rc, rates.get("ONLY_MEDIUM_CO_FROM_WEREWOLF_TEAM"));
 					}
 				}
@@ -324,6 +316,15 @@ public class Estimate extends AbstractEstimate{
 			
 	}
 	
+	public Set<Agent> getCoSet(Role role){
+		Set<Agent> ret = new HashSet<>();
+		for(Agent a: coMap.keySet()) {
+			if(coMap.get(a) == role)
+				ret.add(a);
+		}
+		return ret;
+	}
+	
 	private static int countVillagerTeam(RoleCombination rc, Collection<Agent> collection){
 		int count = 0;
 		for(Agent a: collection){
@@ -351,18 +352,6 @@ public class Estimate extends AbstractEstimate{
 			System.out.printf("%.4f\t",v.get(a));
 			System.out.printf("%.4f\n",1d - v.get(a) - w.get(a));
 		}
-	}
-
-	public Set<Agent> getCoSeerSet() {
-		return coSeerSet;
-	}
-
-	public Set<Agent> getCoMediumSet() {
-		return coMediumSet;
-	}
-
-	public Set<Agent> getCoBodyguardSet() {
-		return coBodyguardSet;
 	}
 	
 	public List<Agent> getMostVotePlanedAgents(){

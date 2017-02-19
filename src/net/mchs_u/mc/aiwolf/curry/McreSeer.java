@@ -65,7 +65,7 @@ public class McreSeer extends McreVillager {
 		List<Agent> tmp = candidate;
 
 		//占い師COした人は除く
-		for(Agent a: getSubjectiveEstimate().getCoSeerSet()){
+		for(Agent a: getSubjectiveEstimate().getCoSet(Role.SEER)){
 			candidate.remove(a);
 		}
 		if(candidate.size() == 0)
