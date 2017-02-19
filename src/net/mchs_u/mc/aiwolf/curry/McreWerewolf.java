@@ -103,6 +103,10 @@ public class McreWerewolf extends AbstractMcreRole {
 		for(Agent a: getWolfList()){
 			candidate.remove(a);
 		}
+		{//最多投票予定先を除く
+		for(Agent a: getSubjectiveEstimate().getMostVotePlanedAgents())
+			candidate.remove(a);
+		}
 		return min(candidate, getObjectiveEstimate().getWerewolfLikeness(), false);	
 	}
 	
