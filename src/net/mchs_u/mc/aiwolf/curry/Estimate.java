@@ -41,7 +41,7 @@ public class Estimate extends AbstractEstimate{
 		rates.put("VOTE_POSSESSED_TO_WEREWOLF"         , 0.900d);
 		rates.put("VOTE_WEREWOLF_TO_POSSESSED"         , 0.900d);
 		rates.put("VOTE_WEREWOLF_TO_WEREWOLF"          , 0.900d);
-		rates.put("FALSE_INQUESTED_FROM_VILLAGER_TEAM" , 0.010d);
+		rates.put("FALSE_IDENTIFIED_FROM_VILLAGER_TEAM" , 0.010d);
 		rates.put("FALSE_DIVINED_FROM_VILLAGER_TEAM"   , 0.010d);
 		rates.put("BLACK_DIVINED_POSSESSED_TO_WEREWOLF", 0.900d);
 		rates.put("BLACK_DIVINED_WEREWOLF_TO_POSSESSED", 0.500d);
@@ -300,9 +300,9 @@ public class Estimate extends AbstractEstimate{
 				//村人陣営が嘘の霊能
 				if(rc.isVillagerTeam(talk.getAgent())){
 					if(rc.isWolf(content.getTarget()) && content.getResult() == Species.HUMAN){
-						probs.update(rc, rates.get("FALSE_INQUESTED_FROM_VILLAGER_TEAM"));
+						probs.update(rc, rates.get("FALSE_IDENTIFIED_FROM_VILLAGER_TEAM"));
 					}else if(!rc.isWolf(content.getTarget()) && content.getResult() == Species.WEREWOLF){
-						probs.update(rc, rates.get("FALSE_INQUESTED_FROM_VILLAGER_TEAM"));
+						probs.update(rc, rates.get("FALSE_IDENTIFIED_FROM_VILLAGER_TEAM"));
 					}
 				}
 			}
