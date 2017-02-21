@@ -88,9 +88,7 @@ public class McrePossessed extends AbstractMcreRole {
 		
 		List<Agent> candidate = new ArrayList<>(getGameInfo().getAliveAgentList());
 		candidate.remove(getGameInfo().getAgent());
-		for(Agent a:divinedList){
-			candidate.remove(a);
-		}
+		candidate.removeAll(divinedList);
 		return max(candidate, getSubjectiveEstimate().getVillagerTeamLikeness(), true);
 	}
 	
