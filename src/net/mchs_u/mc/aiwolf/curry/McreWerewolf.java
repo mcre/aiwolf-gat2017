@@ -115,13 +115,8 @@ public class McreWerewolf extends AbstractMcreRole {
 	protected Agent decideAttackTarget(){
 		List<Agent> candidate = new ArrayList<>(getGameInfo().getAliveAgentList());
 		candidate.remove(getGameInfo().getAgent());
-		for(Agent a: getWolfList()){
-			candidate.remove(a);
-		}
-		//最多投票予定先を除く
-		for(Agent a: getSubjectiveEstimate().getMostVotePlanedAgents()) {
-			candidate.remove(a);
-		}
+		candidate.removeAll(getWolfList());
+		candidate.remove(getGameInfo().getLatestExecutedAgent());
 		
 		if(!joinedPowerPlay) { // 通常時
 			//客観的に、人狼らしくない人

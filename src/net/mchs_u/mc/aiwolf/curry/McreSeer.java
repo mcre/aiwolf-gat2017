@@ -58,16 +58,13 @@ public class McreSeer extends McreVillager {
 	public Agent divine(){
 		List<Agent> candidate = new ArrayList<>(getGameInfo().getAliveAgentList());
 		candidate.remove(getGameInfo().getAgent());
-		for(Agent a:divinedList){
-			candidate.remove(a);
-		}
+		candidate.remove(getGameInfo().getLatestExecutedAgent());
+		candidate.removeAll(divinedList);
 		
 		List<Agent> tmp = candidate;
 
 		//占い師COした人は除く
-		for(Agent a: getSubjectiveEstimate().getCoSet(Role.SEER)){
-			candidate.remove(a);
-		}
+		candidate.removeAll(getSubjectiveEstimate().getCoSet(Role.SEER));
 		if(candidate.size() == 0)
 			//誰も占う人が居ない場合のみ占い師COの人を占う
 			return max(tmp, getSubjectiveEstimate().getWerewolfLikeness(), false);
