@@ -22,15 +22,15 @@ public class Probabilities {
 		int w = gameSetting.getRoleNum(Role.WEREWOLF);
 		int p = gameSetting.getRoleNum(Role.POSSESSED);
 		for(List<Integer> ids: makeLoops(w + p, agents.size())){
-			Set<Agent> wolfs = new HashSet<>();
+			Set<Agent> wolves = new HashSet<>();
 			for(int i = 0; i < w; i++)
-				wolfs.add(agents.get(ids.get(i)));
+				wolves.add(agents.get(ids.get(i)));
 			
 			Set<Agent> possesseds = new HashSet<>();
 			for(int i = w; i < w + p; i++)
 				possesseds.add(agents.get(ids.get(i)));
 			
-			RoleCombination rc = new RoleCombination(wolfs, possesseds);
+			RoleCombination rc = new RoleCombination(wolves, possesseds);
 			if(rc.isValid(agents.size(), gameSetting))
 				probs.put(rc, 1d);
 		}
@@ -77,6 +77,10 @@ public class Probabilities {
 
 	public boolean isUpdated() {
 		return updated;
+	}
+	
+	public void update() {
+		updated = true;
 	}
 	
 	public void resetUpdated() {

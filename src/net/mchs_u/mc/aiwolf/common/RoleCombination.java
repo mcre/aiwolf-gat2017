@@ -1,5 +1,6 @@
 package net.mchs_u.mc.aiwolf.common;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -8,11 +9,11 @@ import org.aiwolf.common.data.Role;
 import org.aiwolf.common.net.GameSetting;
 
 public class RoleCombination {
-	private Set<Agent> wolfs = null;
+	private Set<Agent> werewolves = null;
 	private Set<Agent> possesseds = null;
 	
-	public RoleCombination(Set<Agent> wolfs, Set<Agent> possesseds) {
-		this.wolfs = wolfs;
+	public RoleCombination(Set<Agent> wolves, Set<Agent> possesseds) {
+		this.werewolves = wolves;
 		this.possesseds = possesseds;
 	}
 	
@@ -20,13 +21,13 @@ public class RoleCombination {
 		int w = gameSetting.getRoleNum(Role.WEREWOLF);
 		int p = gameSetting.getRoleNum(Role.POSSESSED);
 		
-		if(wolfs.size() != w)
+		if(werewolves.size() != w)
 			return false;
 		if(possesseds.size() != p)
 			return false;
 		
 		Set<Agent> wp = new HashSet<>();
-		wp.addAll(wolfs);
+		wp.addAll(werewolves);
 		wp.addAll(possesseds);
 		if(wp.size() != w + p)
 			return false;
@@ -34,36 +35,72 @@ public class RoleCombination {
 		return true;
 	}
 	
-	public Set<Agent> getWolfs() {
-		return wolfs;
+	public Set<Agent> getWerewolves() {
+		return werewolves;
 	}
 
 	public Set<Agent> getPossesseds() {
 		return possesseds;
 	}
 	
-	public boolean isWolf(Agent agent) {
-		return wolfs.contains(agent);
+	public boolean isWerewolf(Agent agent) {
+		return werewolves.contains(agent);
 	}
 	
 	public boolean isPossessed(Agent agent) {
 		return possesseds.contains(agent);
 	}
 	
-	public boolean contains(Agent agent) {
-		return wolfs.contains(agent) || possesseds.contains(agent);
-	}
-	
 	public boolean isVillagerTeam(Agent agent){
-		return !isWolf(agent) && !isPossessed(agent);
+		return !isWerewolf(agent) && !isPossessed(agent);
 	}
 
+	public int countVillagerTeam(Collection<Agent> collection){
+		int count = 0;
+		for(Agent a: collection){
+			if(isVillagerTeam(a))
+				count++;
+		}
+		return count;
+	}
+	
+	public int countWerewolfTeam(Collection<Agent> collection){
+		int count = 0;
+		for(Agent a: collection){
+			if(!isVillagerTeam(a))
+				count++;
+		}
+		return count;
+	}
+
+	public int countWerewolves(Collection<Agent> collection){
+		int count = 0;
+		for(Agent a: collection){
+			if(isWerewolf(a))
+				count++;
+		}
+		return count;
+	}
+	
+	public int countPossesseds(Collection<Agent> collection){
+		int count = 0;
+		for(Agent a: collection){
+			if(isPossessed(a))
+				count++;
+		}
+		return count;
+	}
+	
+	public boolean contains(Agent agent) {
+		return werewolves.contains(agent) || possesseds.contains(agent);
+	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((possesseds == null) ? 0 : possesseds.hashCode());
-		result = prime * result + ((wolfs == null) ? 0 : wolfs.hashCode());
+		result = prime * result + ((werewolves == null) ? 0 : werewolves.hashCode());
 		return result;
 	}
 
@@ -81,17 +118,17 @@ public class RoleCombination {
 				return false;
 		} else if (!possesseds.equals(other.possesseds))
 			return false;
-		if (wolfs == null) {
-			if (other.wolfs != null)
+		if (werewolves == null) {
+			if (other.werewolves != null)
 				return false;
-		} else if (!wolfs.equals(other.wolfs))
+		} else if (!werewolves.equals(other.werewolves))
 			return false;
 		return true;
 	}
 
 	@Override
 	public String toString() {
-		return "RoleCombination [wolfs=" + wolfs + ", possesseds=" + possesseds + "]";
+		return "RoleCombination [werewolves=" + werewolves + ", possesseds=" + possesseds + "]";
 	}
 	
 }
