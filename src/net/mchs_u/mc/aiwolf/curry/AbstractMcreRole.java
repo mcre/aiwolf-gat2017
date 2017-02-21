@@ -19,6 +19,7 @@ public abstract class AbstractMcreRole implements EstimatePlayer {
 	private GameInfo gameInfo = null;
 	
 	private int talkListHead = 0;
+	private boolean todayVoted;
 	
 	private Estimate subjectiveEstimate = null; //主観
 	private Estimate objectiveEstimate = null; //客観
@@ -67,6 +68,7 @@ public abstract class AbstractMcreRole implements EstimatePlayer {
 	
 	public void dayStart() {
 		talkListHead = 0;
+		todayVoted = false;
 		
 		subjectiveEstimate.dayStart(gameInfo);
 		objectiveEstimate.dayStart(gameInfo);
@@ -152,6 +154,14 @@ public abstract class AbstractMcreRole implements EstimatePlayer {
 			}
 		}
 		return ret;
+	}
+	
+	public boolean isTodayVoted() {
+		return todayVoted;
+	}
+	
+	public void setTodayVoted(boolean todayVoted) {
+		this.todayVoted = todayVoted;
 	}
 	
 	public Estimate getSubjectiveEstimate() {

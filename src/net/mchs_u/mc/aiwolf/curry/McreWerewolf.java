@@ -13,8 +13,10 @@ import org.aiwolf.client.lib.VoteContentBuilder;
 import org.aiwolf.common.data.Agent;
 import org.aiwolf.common.data.Role;
 import org.aiwolf.common.data.Talk;
+import org.aiwolf.common.data.Vote;
 import org.aiwolf.common.net.GameInfo;
 import org.aiwolf.common.net.GameSetting;
+import org.aiwolf.common.util.Counter;
 
 public class McreWerewolf extends AbstractMcreRole {	
 	protected Agent declaredVoteTarget = null; //今日最後に投票宣言をした対象
@@ -96,7 +98,17 @@ public class McreWerewolf extends AbstractMcreRole {
 	
 	@Override
 	public Agent vote() {
-		return decideVoteTarget();
+		if(!isTodayVoted() || joinedPowerPlay) { // 初回とパワープレイ時
+			setTodayVoted(true);
+			return decideVoteTarget();
+		}
+		// 再投票
+		Counter<Agent> c = new Counter<>();
+		for(Vote v: getGameInfo().getLatestVoteList())
+			c.add(v.getTarget());
+		
+		// 最多投票のうち村人目線で、生存者のうち最も人狼っぽいひとに投票
+		return max(c.getOver(c.get(c.getLargest())).keySet(), getPretendVillagerEstimate().getWerewolfLikeness(), false);
 	}
 	
 	protected List<Agent> getWolfList(){
