@@ -14,7 +14,6 @@ import org.aiwolf.common.net.GameSetting;
 
 import net.mchs_u.mc.aiwolf.common.EstimatePlayer;
 
-
 public abstract class AbstractMcreRole implements EstimatePlayer {	
 	private static final String NAME = "m_cre";
 	private GameInfo gameInfo = null;

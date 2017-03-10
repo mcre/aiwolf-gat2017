@@ -8,7 +8,6 @@ import org.aiwolf.common.net.GameSetting;
 import net.mchs_u.mc.aiwolf.common.AbstractEstimate;
 import net.mchs_u.mc.aiwolf.common.EstimatePlayer;
 
-
 public class McrePlayer implements EstimatePlayer {
 	private EstimatePlayer player;
 	

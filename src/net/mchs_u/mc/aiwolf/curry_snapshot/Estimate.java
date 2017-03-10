@@ -93,7 +93,7 @@ public class Estimate extends AbstractEstimate{
 			double d = probs.getProbability(rc);
 			sum += d;
 			for(Agent a: agents){
-				if(rc.isWolf(a)){
+				if(rc.isWerewolf(a)){
 					werewolfLikeness.put(a, werewolfLikeness.get(a) + d);
 				}else if(!rc.isPossessed(a)){
 					villagerTeamLikeness.put(a, villagerTeamLikeness.get(a) + d);
@@ -121,7 +121,7 @@ public class Estimate extends AbstractEstimate{
 		for(RoleCombination rc: probs.getRoleCombinations()){
 			int countWerewolf = 0;
 			for(Agent a: agents){
-				if(rc.isWolf(a))
+				if(rc.isWerewolf(a))
 					countWerewolf++;
 			}
 			//狼が全滅
@@ -143,7 +143,7 @@ public class Estimate extends AbstractEstimate{
 				if(!rc.isPossessed(agent))
 					reserveRemove.add(rc);
 			} else if(role == Role.WEREWOLF) {
-				if(!rc.isWolf(agent))
+				if(!rc.isWerewolf(agent))
 					reserveRemove.add(rc);
 			} else {
 				if(!rc.isVillagerTeam(agent))
@@ -159,10 +159,10 @@ public class Estimate extends AbstractEstimate{
 		Set<RoleCombination> reserveRemove = new HashSet<>();
 		for(RoleCombination rc: probs.getRoleCombinations()){
 			if(species == Species.WEREWOLF){
-				if(!rc.isWolf(agent))
+				if(!rc.isWerewolf(agent))
 					reserveRemove.add(rc);
 			} else {
-				if(rc.isWolf(agent))
+				if(rc.isWerewolf(agent))
 					reserveRemove.add(rc);
 			}
 		}
@@ -174,7 +174,7 @@ public class Estimate extends AbstractEstimate{
 	public void updateTeamMemberWolf(List<Agent> agents){
 		for(RoleCombination rc: probs.getRoleCombinations()){
 			for(Agent a: agents){
-				if(rc.isWolf(a)){
+				if(rc.isWerewolf(a)){
 					probs.update(rc, rates.get("TEAM_MEMBER_WOLF"));
 					break;
 				}
@@ -190,7 +190,7 @@ public class Estimate extends AbstractEstimate{
 			return;
 		
 		for(RoleCombination rc: probs.getRoleCombinations()){
-			if(rc.isWolf(guardedAgent))
+			if(rc.isWerewolf(guardedAgent))
 				probs.update(rc, rates.get("GUARDED_WEREWOLF_WHEN_ATTACK_FAILURE"));
 		}
 	}
@@ -199,13 +199,13 @@ public class Estimate extends AbstractEstimate{
 		for(Vote v: voteList){
 			for(RoleCombination rc: probs.getRoleCombinations()){
 				// 狂人から人狼への投票
-				if(rc.isPossessed(v.getAgent()) && rc.isWolf(v.getTarget()))
+				if(rc.isPossessed(v.getAgent()) && rc.isWerewolf(v.getTarget()))
 					probs.update(rc, rates.get("VOTE_POSSESSED_TO_WEREWOLF"));
 				// 人狼から狂人への投票
-				else if(rc.isWolf(v.getAgent()) && rc.isPossessed(v.getTarget()))
+				else if(rc.isWerewolf(v.getAgent()) && rc.isPossessed(v.getTarget()))
 					probs.update(rc, rates.get("VOTE_WEREWOLF_TO_POSSESSED"));
 				// 人狼から人狼への投票
-				else if(rc.isWolf(v.getAgent()) && rc.isWolf(v.getTarget()))
+				else if(rc.isWerewolf(v.getAgent()) && rc.isWerewolf(v.getTarget()))
 					probs.update(rc, rates.get("VOTE_WEREWOLF_TO_WEREWOLF"));
 			}
 		}
@@ -217,7 +217,7 @@ public class Estimate extends AbstractEstimate{
 		for(RoleCombination rc: probs.getRoleCombinations()){
 			for(Agent agent: agents) {
 				//人狼が襲撃される
-				if(rc.isWolf(agent)){
+				if(rc.isWerewolf(agent)){
 					reserveRemove.add(rc);
 				}
 			}
@@ -285,19 +285,19 @@ public class Estimate extends AbstractEstimate{
 		case DIVINED:
 			for(RoleCombination rc: probs.getRoleCombinations()){
 				//狂人が人狼に黒出し
-				if(rc.isPossessed(talk.getAgent()) && rc.isWolf(content.getTarget()))
+				if(rc.isPossessed(talk.getAgent()) && rc.isWerewolf(content.getTarget()))
 					probs.update(rc, rates.get("BLACK_DIVINED_POSSESSED_TO_WEREWOLF"));
 				//人狼が狂人に黒出し
-				else if(rc.isWolf(talk.getAgent()) && rc.isPossessed(content.getTarget()))
+				else if(rc.isWerewolf(talk.getAgent()) && rc.isPossessed(content.getTarget()))
 					probs.update(rc, rates.get("BLACK_DIVINED_WEREWOLF_TO_POSSESSED"));
 				//人狼が人狼に黒出し
-				else if(rc.isWolf(talk.getAgent()) && rc.isWolf(content.getTarget()))
+				else if(rc.isWerewolf(talk.getAgent()) && rc.isWerewolf(content.getTarget()))
 					probs.update(rc, rates.get("BLACK_DIVINED_WEREWOLF_TO_WEREWOLF"));	
 				//村人陣営が嘘の占い
 				else if(rc.isVillagerTeam(talk.getAgent())){
-					if(rc.isWolf(content.getTarget()) && content.getResult() == Species.HUMAN){
+					if(rc.isWerewolf(content.getTarget()) && content.getResult() == Species.HUMAN){
 						probs.update(rc, rates.get("FALSE_DIVINED_FROM_VILLAGER_TEAM"));
-					}else if(!rc.isWolf(content.getTarget()) && content.getResult() == Species.WEREWOLF){
+					}else if(!rc.isWerewolf(content.getTarget()) && content.getResult() == Species.WEREWOLF){
 						probs.update(rc, rates.get("FALSE_DIVINED_FROM_VILLAGER_TEAM"));
 					}
 				}
@@ -307,9 +307,9 @@ public class Estimate extends AbstractEstimate{
 			for(RoleCombination rc: probs.getRoleCombinations()){
 				//村人陣営が嘘の霊能
 				if(rc.isVillagerTeam(talk.getAgent())){
-					if(rc.isWolf(content.getTarget()) && content.getResult() == Species.HUMAN){
+					if(rc.isWerewolf(content.getTarget()) && content.getResult() == Species.HUMAN){
 						probs.update(rc, rates.get("FALSE_INQUESTED_FROM_VILLAGER_TEAM"));
-					}else if(!rc.isWolf(content.getTarget()) && content.getResult() == Species.WEREWOLF){
+					}else if(!rc.isWerewolf(content.getTarget()) && content.getResult() == Species.WEREWOLF){
 						probs.update(rc, rates.get("FALSE_INQUESTED_FROM_VILLAGER_TEAM"));
 					}
 				}

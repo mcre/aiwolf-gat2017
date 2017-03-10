@@ -16,17 +16,13 @@ public class Main {
 		boolean isVisualize = true;
 		boolean isLog = false;
 		boolean isSaveResult = true;
-		Role role = Role.WEREWOLF;
-		//Role role = null;
+		Role role = null;
 		
 		List<PlayerDefinition> playerDefinitions = new ArrayList<>();
 		playerDefinitions.add(new PlayerDefinition(net.mchs_u.mc.aiwolf.baikin04.McrePlayer.class, false, null, "baikin"));
 		playerDefinitions.add(new PlayerDefinition(net.mchs_u.mc.aiwolf.curry_snapshot.McrePlayer.class, false, null, "curry_ss"));
 		playerDefinitions.add(new PlayerDefinition(net.mchs_u.mc.aiwolf.curry.McrePlayer.class, isVisualize, role, "curry"));
-		playerDefinitions.add(new PlayerDefinition(net.mchs_u.mc.aiwolf.curry.McrePlayer.class, false, Role.WEREWOLF, "curry2"));
-		playerDefinitions.add(new PlayerDefinition(net.mchs_u.mc.aiwolf.curry.McrePlayer.class, false, Role.WEREWOLF, "curry3"));
-		playerDefinitions.add(new PlayerDefinition(net.mchs_u.mc.aiwolf.curry.McrePlayer.class, false, Role.POSSESSED, "curry4"));
-		
+
 		int count = 0;
 		while(playerDefinitions.size() < playerNum){
 			playerDefinitions.add(new PlayerDefinition(org.aiwolf.sample.player.SampleRoleAssignPlayer.class, false, null, String.format("smpl%02d", count++)));
